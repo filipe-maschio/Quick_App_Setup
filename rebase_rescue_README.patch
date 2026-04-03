@@ -1,0 +1,18 @@
+diff --git a/README.md b/README.md
+index 96cf2ac..6630103 100644
+--- a/README.md
++++ b/README.md
+@@ -140,8 +140,8 @@ quick-app-setup/
+ 
+ Feel free to fork, improve, and submit pull requests.
+ 
+-## Author
++# 👨‍💻 Author
+ 
+-Developed by **Fill "Filipe Maschio"**
++Developed by **"Fill" Filipe Maschio**
+ 
+-If this project helped you, give it a star on GitHub ⭐
+\ No newline at end of file
++If this project helped you, consider giving it a star ⭐
+\ No newline at end of file

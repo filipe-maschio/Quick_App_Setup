@@ -58,12 +58,6 @@ Quick_App_Setup.bat
 
 > ⚠️ Run as **Administrator**
 
-Optional log level:
-
-```
-Quick_App_Setup.bat --log 1
-```
-
 ### 3. Select Applications
 
 Example input:
@@ -103,7 +97,7 @@ Instalando "Mega"...
 You can control installation verbosity:
 
 ```
-Quick_App_Setup.bat --log <valor>
+set LOGLEVEL=
 ```
 
 |Value|Behavior|
@@ -117,8 +111,6 @@ Quick_App_Setup.bat --log <valor>
 - Windows 10 / 11
 - Winget installed
 
-> O script agora valida automaticamente a presença do `winget` antes de abrir o menu.
-
 Check Winget:
 
 ```
@@ -128,7 +120,7 @@ winget --version
 ## Development Tips
 
 - Remove `--silent` for debugging
-- Use full logs (`--log 2`) for troubleshooting
+- Use full logs (`LOGLEVEL=2`) for troubleshooting
 - Test individual installs:
 
 ```
@@ -152,8 +144,4 @@ Feel free to fork, improve, and submit pull requests.
 
 Developed by **"Fill" Filipe Maschio**
 
-<<<<<<< HEAD
-If this project helped you, give it a star on GitHub ⭐
-=======
 If this project helped you, consider giving it a star ⭐
->>>>>>> 7d7c9f7 (Update README.md)
