@@ -2,7 +2,7 @@
 title Setup Inteligente Fill v.4.4
 chcp 65001 >nul
 
-set LOGLEVEL=2
+set "LOGLEVEL=2"
 
 :: =========================
 :: AUTO ELEVAR PARA ADMIN
@@ -15,17 +15,18 @@ if "%~1"=="admin" goto start
 net session >nul 2>&1
 if %errorLevel% neq 0 (
     echo Elevando para administrador...
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process '%~f0' -ArgumentList 'admin' -Verb RunAs"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process '%~f0' -ArgumentList ('admin ' + '%*') -Verb RunAs"
     exit
 )
 
 :start
 
 setlocal enabledelayedexpansion
+call :parse_args %*
 
-set INSTALLED_LIST=
-set SKIPPED_LIST=
-set ERROR_LIST=
+set "INSTALLED_LIST="
+set "SKIPPED_LIST="
+set "ERROR_LIST="
 
 color 07
 for /f %%A in ('echo prompt $E^| cmd') do set "ESC=%%A"
@@ -35,24 +36,11 @@ for /f %%A in ('echo prompt $E^| cmd') do set "ESC=%%A"
 :: Vermelho = echo %ESC%[31m[ERRO] Falha ao instalar %1%ESC%[0m
 :: Amarelo = echo %ESC%[33m[SKIP] %1 ja instalado%ESC%[0m
 
+call :check_prerequisites
+if %errorlevel% neq 0 goto end
+
 :: Define ponto de entrada
 goto menu
-
-:: =========================
-:: FUNCAO PROGRESSO
-:: =========================
-:progress
-setlocal enabledelayedexpansion
-set bar=
-
-for %%p in (10 20 30 40 50 60 70 80 90 100) do (
-    set bar=!bar!#
-    echo [!bar!] %%p%%
-    timeout /t 1 >nul
-)
-
-endlocal
-goto :eof
 
 :: =========================
 :: FUNCAO WINGET COM LOG LEVEL
@@ -80,6 +68,20 @@ if "%LOGLEVEL%"=="2" (
 :: fallback (segurança)
 winget install --id %1 -e --silent --accept-package-agreements --accept-source-agreements --disable-interactivity
 goto :eof
+
+:: =========================
+:: FUNCAO PRE-CHECKS
+:: =========================
+:check_prerequisites
+winget --version >nul 2>&1
+if errorlevel 1 (
+    echo.
+    echo %ESC%[31m  ✖  Winget nao encontrado neste sistema.%ESC%[0m
+    echo %ESC%[33m  ⚠  Instale/atualize o App Installer e tente novamente.%ESC%[0m
+    echo.
+    exit /b 1
+)
+exit /b 0
 
 :: =========================
 :: FUNCAO INSTALL
@@ -125,31 +127,34 @@ goto :eof
 :add_unique
 set "var_name=%~1"
 set "value=%~2"
+set "token= %value% "
 
-for %%# in ("!%var_name%!") do set "current=%%~#"
-
-echo !current! | findstr /i "%value%" >nul
+echo  !%var_name%!  | findstr /i /c:"%token%" >nul
 if errorlevel 1 (
-    set "%var_name%=!current! %value%"
+    set "%var_name%=!%var_name%! %value%"
 )
 goto :eof
 
 :: =========================
-:: FUNCAO SPINNER
+:: FUNCAO PARSE ARGS
 :: =========================
-:spinner
-setlocal enabledelayedexpansion
+:parse_args
+if "%~1"=="" goto :eof
 
-set chars=|/-\
-for /l %%i in (1,1,20) do (
-    for %%c in (!chars!) do (
-        <nul set /p= Instalando... %%c`r
-        timeout /t 1 >nul
+if /i "%~1"=="admin" (
+    shift
+    goto parse_args
+)
+
+if /i "%~1"=="--log" (
+    if not "%~2"=="" (
+        set "LOGLEVEL=%~2"
+        shift
     )
 )
 
-endlocal
-goto :eof
+shift
+goto parse_args
 
 :: =========================
 :: MENU
@@ -191,20 +196,25 @@ echo ===============================================
 echo.
 
 for %%a in (%escolha%) do (
-
-    if %%a==1 call :install "Google_Chrome" Google.Chrome
-    if %%a==2 call :install "Tor_Browser" TorProject.TorBrowser
-    if %%a==3 call :install "Google_Drive" Google.Drive
-    if %%a==4 call :install "Mega" Mega.MEGASync
-    if %%a==5 call :install "Obsidian" Obsidian.Obsidian
-    if %%a==6 call :install "Anki" Anki.Anki
-    if %%a==7 call :install "KeePass" DominikReichl.KeePass
-    if %%a==8 call :install "Notepad++" Notepad++.Notepad++
-    if %%a==9 call :install "Foxit_PDF" Foxit.FoxitReader
-    if %%a==10 call :install "WinRAR" RARLab.WinRAR
-    if %%a==11 call :install "PowerToys" Microsoft.PowerToys
-    if %%a==12 call :install "Wireshark" WiresharkFoundation.Wireshark
-
+    echo %%a | findstr /r "^[0-9][0-9]*$" >nul
+    if errorlevel 1 (
+        echo %ESC%[33m  ⚠  Opcao invalida ignorada: %%a%ESC%[0m
+    ) else (
+        if %%a==1 call :install "Google_Chrome" Google.Chrome
+        if %%a==2 call :install "Tor_Browser" TorProject.TorBrowser
+        if %%a==3 call :install "Google_Drive" Google.Drive
+        if %%a==4 call :install "Mega" Mega.MEGASync
+        if %%a==5 call :install "Obsidian" Obsidian.Obsidian
+        if %%a==6 call :install "Anki" Anki.Anki
+        if %%a==7 call :install "KeePass" DominikReichl.KeePass
+        if %%a==8 call :install "Notepad++" Notepad++.Notepad++
+        if %%a==9 call :install "Foxit_PDF" Foxit.FoxitReader
+        if %%a==10 call :install "WinRAR" RARLab.WinRAR
+        if %%a==11 call :install "PowerToys" Microsoft.PowerToys
+        if %%a==12 call :install "Wireshark" WiresharkFoundation.Wireshark
+        if %%a lss 0 echo %ESC%[33m  ⚠  Opcao invalida ignorada: %%a%ESC%[0m
+        if %%a gtr 12 echo %ESC%[33m  ⚠  Opcao invalida ignorada: %%a%ESC%[0m
+    )
 )
 
 echo.
@@ -222,7 +232,7 @@ echo %ESC%[32m  ✔  INSTALADOS:%ESC%[0m
 if defined INSTALLED_LIST (
     for %%i in (!INSTALLED_LIST!) do echo    - %%~i
 ) else (
-    echo      X
+    echo      Nenhum item
 )
 
 echo.
@@ -230,7 +240,7 @@ echo %ESC%[33m  ⚠  JA EXISTIAM:%ESC%[0m
 if defined SKIPPED_LIST (
     for %%i in (!SKIPPED_LIST!) do echo    - %%~i
 ) else (
-    echo      X
+    echo      Nenhum item
 )
 
 echo.
@@ -238,11 +248,12 @@ echo %ESC%[31m  ✖  ERROS:%ESC%[0m
 if defined ERROR_LIST (
     for %%i in (!ERROR_LIST!) do echo    - %%~i
 ) else (
-    echo      X
+    echo      Nenhum item
 )
 
 echo.
 echo.
 echo Pressione qualquer tecla para finalizar...
 pause >nul
+:end
 exit
