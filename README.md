@@ -1,109 +1,161 @@
-# Quick App Setup (Windows)
+# 🚀 Quick App Setup (Windows)  
+  
+Automated Windows setup tool using **Batch Script + Winget** to quickly install, verify, and manage essential applications.  
 
-Automated Windows setup tool using **Batch Script + Winget** to quickly install, verify, and manage essential applications.
+  ---
+# 🎬 Demo (what happens in practice)
 
-## Overview
+![Execution Demo](docs/demo_quick_app_setup.gif)
 
-This project provides a simple yet powerful CLI tool to:
+---  
 
-- Install multiple applications in one run;
-- Detect already installed apps (skip intelligently);
-- Handle installation errors;
-- Display clean and colored results;
-- Optionally show full Winget logs.
+## 📌 Overview  
+  
+This project provides a fast and reliable CLI tool to:  
+  
+- Install multiple applications in one run  
+- Automatically skip already installed apps  
+- Handle installation failures gracefully  
+- Display clean and structured output  
+- Generate a final execution summary  
+  
+---  
+  
+## 🧠 Key Concepts  
+  
+This tool is built with a **dynamic app system**:  
+  
+- Apps are defined using a function (`:add_app`)  
+- No manual indexing (`APP_1`, `APP_2`, etc.)  
+- The app list is automatically generated  
+- Easy to maintain and scale  
+  
+---  
+  
+## ⚙️ Built With  
+  
+- **Windows Batch Script (`.bat`)**  
+- **Winget (Windows Package Manager)**  
+  
+---  
+  
+## ✨ Features  
+  
+- Multi-app selection (install multiple at once)  
+- Dynamic app list (no manual numbering)  
+- Smart detection of installed apps  
+- Structured error handling  
+- Execution time tracking  
+- Optional logging levels  
+- Clean CLI output with status indicators:    
+  - ✔ Installed  
+  - ⚠ Already installed  
+  - ✖ Failed
 
-## Built With
-
-- **Windows Batch Script (.bat)**
-- **Winget (Windows Package Manager)**
-
-## Features
-
-- Multi-app selection;
-- Smart skip (already installed detection);
-- Error handling;
-- Colored CLI output (✔ ⚠ ✖);
-- Optional verbose logging;
-- Clean final summary.
-
-## Supported Applications
-
-- Google Chrome
-- Tor Browser
-- Google Drive
-- Mega
-- Obsidian
-- Anki
-- KeePass
-- Notepad++
-- Foxit PDF
-- WinRAR
-- PowerToys
-- Wireshark
-
-## How to Use
-
-### 1. Download or Clone
-
+---  
+  
+## 📦 Supported Applications  
+  
+> This list is dynamically generated from the script  
+  
+- Google Chrome  
+- Google Drive  
+- MEGA  
+- Dropbox  
+- Obsidian  
+- Notepad++  
+- Anki  
+- KeePassXC  
+- Foxit PDF  
+- WinRAR  
+- 7-Zip  
+- PowerToys  
+- Proton VPN  
+- Windows Terminal  
+- Wireshark  
+- PatchMyPC  
+- Miro  
+- VLC  
+- VS Code  
+- Python 3.11 / 3.14  
+- Git  
+- GitHub CLI  
+  
+---  
+  
+## 🚀 How to Use  
+  
+### 1. Clone the Repository  
+  
+```bash  
+git clone https://github.com/filipe-maschio/Quick_App_Setup  
+cd Quick_App_Setup
 ```
-git clone https://github.com/filipe-maschio/Quick_App_Setup
-cd quick-app-setup
-```
-
+ 
 ### 2. Run the Script
-
+ 
 ```
 Quick_App_Setup.bat
 ```
-
+ 
 > ⚠️ Run as **Administrator**
-
-Optional log level:
-
-```
-Quick_App_Setup.bat --log 1
-```
-
+ 
 ### 3. Select Applications
 
-Example input:
+Example:
 
 ```
-1 5 10
+1 2 5 10
 ```
 
+### 4. Press ENTER
 
-## Output Example
+---
 
-```
-Instalando "Mega"...
+## ⚠️ Known Behaviors (Important)
 
-✔ Mega instalado
+### 🔹 Winget ID Issues
 
-⚠ Google Chrome ja instalado
+Some packages may fail due to incorrect or outdated IDs.
 
-✖ Google Drive falhou
-```
+Example:
 
-## Final Summary
+- ❌ `Google.Drive` (wrong)
+- ✅ `Google.GoogleDrive` (correct)
 
-```
-✔ INSTALADOS:
-- Mega
+### 🔹 Hash Mismatch (Winget Limitation)
 
-⚠ JA EXISTIAM:
-- Google Chrome
-
-✖ ERROS:
-- Google Drive
-```
-
-## Log Modes
-
-You can control installation verbosity:
+You may see errors like:
 
 ```
-Quick_App_Setup.bat --log <valor>
+Installer hash does not match
+```
+
+This is **not a script issue**.
+
+It happens when:
+
+- The installer changes on the vendor side
+- The Winget manifest is outdated
+
+Example affected package:
+
+- MEGA (`Mega.MEGASync`)
+
+### 🔹 Already Installed Detection
+
+Apps already installed are automatically skipped:
+
+⚠ Already installed
+
+---
+
+## 🧾 Log Modes
+
+Control installation verbosity:
+
+```
+Quick_App_Setup.bat --log "value"
 ```
 
 |Value|Behavior|
@@ -112,48 +164,108 @@ Quick_App_Setup.bat --log <valor>
 |1|Partial logs|
 |2|Full logs|
 
-## Requirements
+Default mode:
+
+```
+LOGLEVEL=2
+```
+
+---
+
+## 📌 Requirements
 
 - Windows 10 / 11
 - Winget installed
 
-> O script agora valida automaticamente a presença do `winget` antes de abrir o menu.
-
-Check Winget:
+Check:
 
 ```
 winget --version
 ```
 
-## Development Tips
+The script automatically validates Winget before execution.
 
-- Remove `--silent` for debugging
-- Use full logs (`--log 2`) for troubleshooting
-- Test individual installs:
+---
 
-```
-winget install --id Google.Chrome -e
-```
+## 🧪 Debug Tips
 
-## Project Structure
+- Use full logs:
 
 ```
-quick-app-setup/
-│
-├── Quick_App_Setup.bat
+Quick_App_Setup.bat --log 2
+```
+
+- Test individual packages:
+
+```
+winget install --id VideoLAN.VLC -e
+```
+
+- Update sources:
+
+```
+winget source update
+```
+
+---
+
+## 🏗️ Project Structure
+
+Quick_App_Setup/  
+│  
+├── docs  
+├── Quick_App_Setup.bat  
 └── README.md
+
+---
+
+## 🧠 How Apps Are Defined
+
+Inside the script:
+
+```
+call :add_app "VLC" "VideoLAN.VLC"
 ```
 
-## Contributing
+This dynamically builds the menu and installation logic.
+
+---
+
+## 🔧 Customization
+
+### ➕ Adding Apps  
+  
+Simply add a new line:  
+
+```
+call :add_app "Slack" "SlackTechnologies.Slack"
+```
+
+### ➖ Removing Apps  
+  
+Just delete the corresponding line.  
+
+### 🔄 Reordering Apps  
+  
+Change the order of the lines — the menu will reflect it automatically.
+
+---
+
+## 🤝 Contributing
 
 Feel free to fork, improve, and submit pull requests.
 
-# 👨‍💻 Author
+---
+
+## 📌 Status
+
+✅ Stable `v1.0.1`  
+🚀 Production-ready for personal automation  
+
+---
+
+## 👨‍💻 Author
 
 Developed by **"Fill" Filipe Maschio**
 
-<<<<<<< HEAD
-If this project helped you, give it a star on GitHub ⭐
-=======
 If this project helped you, consider giving it a star ⭐
->>>>>>> 7d7c9f7 (Update README.md)
